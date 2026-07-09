@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Deepak Jangid — Senior Software & AI Engineer building scalable backend systems, React frontends, and LLM-powered products." />
   <title>Portfolio — Senior Software & AI Engineer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="assets/avatar.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300&family=Outfit:wght@300;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -23,6 +26,10 @@
     <li><a href="#projects">Projects</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <a href="blogs.html" class="nav-blog-btn">
+    <span class="nav-blog-dot"></span>
+    My Blogs
+  </a>
 </nav>
 
 <!-- HERO -->
@@ -42,6 +49,7 @@
     <div class="hero-card">
       <div class="hero-avatar">
         <img src="assets/avatar.jpg" alt="Deepak Jangid" id="avatar-img"
+             width="480" height="720" fetchpriority="high" decoding="async"
              onerror="this.style.display='none';document.getElementById('avatar-fallback').style.display='flex';">
         <span id="avatar-fallback" style="display:none;">DJ</span>
       </div>
@@ -143,9 +151,10 @@
     <div class="skill-category reveal">
       <div class="skill-accent">☕</div>
       <div class="skill-cat-label">Domain 01</div>
-      <div class="skill-cat-title">Java Backend</div>
+      <div class="skill-cat-title">Backend Engineering</div>
       <ul class="skill-list">
         <li>Java 17+ &amp; Spring Boot</li>
+        <li>Python 3+ &amp; FastAPI</li>
         <li>Microservices Architecture</li>
         <li>REST &amp; GraphQL APIs</li>
         <li>Hibernate / JPA / Flyway</li>
@@ -153,6 +162,7 @@
         <li>PostgreSQL, MySQL, Redis</li>
         <li>Docker &amp; Kubernetes</li>
         <li>CI/CD · GitHub Actions</li>
+        <li>AWS &amp; GCP Services</li>
       </ul>
     </div>
     <div class="skill-category reveal">
@@ -162,12 +172,13 @@
       <ul class="skill-list">
         <li>LLM Integration (OpenAI, Claude, Gemini)</li>
         <li>RAG Pipeline Design</li>
-        <li>LangChain / LlamaIndex</li>
+        <li>LangChain / LangGraph / LangSmith</li>
         <li>Vector DBs (Pinecone, Weaviate)</li>
         <li>Fine-tuning &amp; Prompt Engineering</li>
         <li>Semantic Search</li>
         <li>Python · HuggingFace</li>
         <li>MLOps Fundamentals</li>
+        <li>Observation &amp; Monitoring</li>
       </ul>
     </div>
     <div class="skill-category reveal">
@@ -349,9 +360,9 @@
           <span class="contact-link-icon">⌥</span>
           github.com/Deepakbefoodly
         </a>
-        <a href="https://www.kaggle.com/deepaksha8504" target="_blank" class="contact-link">
-          <span class="contact-link-icon">K</span>
-          kaggle.com/deepaksha8504
+        <a href="https://substack.com/@manshu8504" target="_blank" class="contact-link">
+          <span class="contact-link-icon">S</span>
+          substack.com/@manshu8504
         </a>
       </div>
     </div>
@@ -389,24 +400,26 @@
 </footer>
 
 <script>
-  // Custom cursor
-  const cursor = document.getElementById('cursor');
-  const ring = document.getElementById('cursor-ring');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  function animCursor() {
-    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
-    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
-    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-    requestAnimationFrame(animCursor);
-  }
-  animCursor();
+  // Custom cursor — only for devices with a real pointer (skip touch, saves a perpetual rAF loop)
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+    function animCursor() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
 
-  // Hover states for links
-  document.querySelectorAll('a, button').forEach(el => {
-    el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2.5)'; ring.style.opacity = '0'; });
-    el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.opacity = '0.6'; });
-  });
+    // Hover states for links
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2.5)'; ring.style.opacity = '0'; });
+      el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.opacity = '0.6'; });
+    });
+  }
 
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
@@ -414,16 +427,23 @@
     entries.forEach((e, i) => {
       if (e.isIntersecting) {
         setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
       }
     });
   }, { threshold: 0.1 });
   reveals.forEach(r => observer.observe(r));
 
   // Nav scroll effect
+  const navEl = document.querySelector('nav');
+  let navTicking = false;
   window.addEventListener('scroll', () => {
-    document.querySelector('nav').style.boxShadow = window.scrollY > 20
-      ? '0 2px 20px rgba(13,13,13,0.08)' : 'none';
-  });
+    if (navTicking) return;
+    navTicking = true;
+    requestAnimationFrame(() => {
+      navEl.style.boxShadow = window.scrollY > 20 ? '0 2px 20px rgba(13,13,13,0.08)' : 'none';
+      navTicking = false;
+    });
+  }, { passive: true });
 </script>
 </body>
 </html>
