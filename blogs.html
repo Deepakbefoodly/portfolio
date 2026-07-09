@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Writing by Deepak Jangid — notes on software engineering, AI, and building things." />
+  <title>My Blogs — Deepak Jangid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300&family=Outfit:wght@300;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">DeepakJangid.dev</a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#skills">Skills</a></li>
+    <li><a href="index.html#experience">Experience</a></li>
+    <li><a href="index.html#projects">Projects</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <a href="index.html" class="nav-blog-btn">
+    <span class="nav-blog-dot"></span>
+    ← Portfolio
+  </a>
+</nav>
+
+<!-- BLOG HERO -->
+<section class="blog-hero">
+  <div class="section-label reveal">Writing</div>
+  <h2 class="reveal">My Blogs</h2>
+  <p class="blog-hero-desc reveal">
+    Thoughts on backend systems, AI engineering, and building products — published on Substack and Medium.
+    Every card below is pulled live from both feeds; click one to read the full post.
+  </p>
+  <a href="https://manshu8504.substack.com" target="_blank" rel="noopener" class="btn reveal">Subscribe Substack →</a>
+</section>
+
+<!-- BLOG GRID -->
+<section class="blog-section">
+  <div id="blog-grid" class="blog-grid">
+    <div class="blog-state" id="blog-loading">
+      <span class="blog-state-spinner"></span>
+      Fetching latest posts…
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Deepak Jangid · All rights reserved</span>
+  <span>Built with HTML, CSS &amp; care · Hosted on GitHub Pages</span>
+  <a href="index.html">← Back to portfolio</a>
+</footer>
+
+<script>
+  // Custom cursor — only for devices with a real pointer
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+    function animCursor() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2.5)'; ring.style.opacity = '0'; });
+      el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.opacity = '0.6'; });
+    });
+  }
+
+  // Nav scroll effect
+  const navEl = document.querySelector('nav');
+  let navTicking = false;
+  window.addEventListener('scroll', () => {
+    if (navTicking) return;
+    navTicking = true;
+    requestAnimationFrame(() => {
+      navEl.style.boxShadow = window.scrollY > 20 ? '0 2px 20px rgba(13,13,13,0.08)' : 'none';
+      navTicking = false;
+    });
+  }, { passive: true });
+
+  // Scroll reveal
+  function observeReveals() {
+    const reveals = document.querySelectorAll('.reveal:not(.visible)');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 60);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => observer.observe(r));
+  }
+  observeReveals();
+
+  // ── Fetch posts from Substack + Medium ──
+  // GitHub Pages is static and neither platform sends CORS headers for
+  // cross-origin fetches, so we go through a public RSS→JSON proxy.
+  const FEEDS = [
+    { source: 'Substack', url: 'https://manshu8504.substack.com/feed', profileUrl: 'https://manshu8504.substack.com' },
+    { source: 'Medium', url: 'https://medium.com/feed/@befoodly', profileUrl: 'https://medium.com/@befoodly' },
+  ];
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+
+  function stripHtml(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  // Substack's rss2json "thumbnail" field is usually empty — fall back to the
+  // enclosure image, then to the first <img> found in the post content.
+  function extractImage(item) {
+    if (item.thumbnail) return item.thumbnail;
+    if (item.enclosure && item.enclosure.link && (!item.enclosure.type || item.enclosure.type.startsWith('image'))) {
+      return item.enclosure.link;
+    }
+    const match = /<img[^>]+src="([^"]+)"/.exec(item.content || item.description || '');
+    return match ? match[1] : null;
+  }
+
+  function renderPosts(items) {
+    const grid = document.getElementById('blog-grid');
+    grid.innerHTML = items.map((item, i) => {
+      const num = String(i + 1).padStart(2, '0');
+      const rawExcerpt = stripHtml(item.description || item.content || '');
+      const excerpt = rawExcerpt.length > 150 ? rawExcerpt.slice(0, 150).trim() + '…' : rawExcerpt;
+      const imageUrl = extractImage(item);
+      const thumbInner = imageUrl
+        ? `<img src="${escapeHtml(imageUrl)}" alt="" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('blog-thumb-empty'); this.remove();">`
+        : `<span class="blog-thumb-number">${num}</span>`;
+      const sourceClass = item.source === 'Medium' ? 'blog-source-medium' : 'blog-source-substack';
+      return `
+        <a class="blog-card reveal" href="${item.link}" target="_blank" rel="noopener" aria-label="Read: ${escapeHtml(item.title)}">
+          <div class="blog-thumb${imageUrl ? '' : ' blog-thumb-empty'}">
+            ${thumbInner}
+            <span class="blog-source ${sourceClass}">${item.source}</span>
+            <span class="blog-arrow">↗</span>
+          </div>
+          <div class="blog-body">
+            <div class="blog-date">${formatDate(item.pubDate)}</div>
+            <h3 class="blog-title">${escapeHtml(item.title)}</h3>
+            <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
+          </div>
+        </a>
+      `;
+    }).join('');
+    observeReveals();
+  }
+
+  function renderError() {
+    const grid = document.getElementById('blog-grid');
+    grid.innerHTML = `
+      <div class="blog-state blog-state-error">
+        Couldn't load posts right now.
+        <a href="https://manshu8504.substack.com" target="_blank" rel="noopener">Read on Substack →</a>
+        <a href="https://medium.com/@befoodly" target="_blank" rel="noopener">Read on Medium →</a>
+      </div>
+    `;
+  }
+
+  function fetchFeed(feed) {
+    const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url);
+    return fetch(proxyUrl)
+      .then(res => { if (!res.ok) throw new Error('Network error'); return res.json(); })
+      .then(data => {
+        if (data.status !== 'ok' || !data.items) throw new Error('Empty feed');
+        return data.items.map(item => Object.assign({}, item, { source: feed.source }));
+      })
+      .catch(err => { console.error(feed.source + ' feed failed:', err); return []; });
+  }
+
+  Promise.all(FEEDS.map(fetchFeed)).then(results => {
+    const items = results.flat().sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    if (!items.length) return renderError();
+    renderPosts(items);
+  });
+</script>
+</body>
+</html>
