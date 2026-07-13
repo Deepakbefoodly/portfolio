@@ -109,7 +109,10 @@
 
   // ── Fetch posts from Substack + Medium ──
   // GitHub Pages is static and neither platform sends CORS headers for
-  // cross-origin fetches, so we go through a public RSS→JSON proxy.
+  // cross-origin fetches, so we go through a public CORS proxy and parse
+  // the raw RSS/XML ourselves (an earlier version used an RSS→JSON proxy,
+  // but its response cache lagged behind newly published posts by hours).
+  const CORS_PROXY = 'https://corsproxy.io/?url=';
   const FEEDS = [
     { source: 'Substack', url: 'https://manshu8504.substack.com/feed', profileUrl: 'https://manshu8504.substack.com' },
     { source: 'Medium', url: 'https://medium.com/feed/@befoodly', profileUrl: 'https://medium.com/@befoodly' },
@@ -131,15 +134,34 @@
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
-  // Substack's rss2json "thumbnail" field is usually empty — fall back to the
-  // enclosure image, then to the first <img> found in the post content.
+  // Prefer the item's <enclosure> image, then fall back to the first <img>
+  // found in the post content/description.
   function extractImage(item) {
-    if (item.thumbnail) return item.thumbnail;
-    if (item.enclosure && item.enclosure.link && (!item.enclosure.type || item.enclosure.type.startsWith('image'))) {
-      return item.enclosure.link;
-    }
+    if (item.enclosureUrl) return item.enclosureUrl;
     const match = /<img[^>]+src="([^"]+)"/.exec(item.content || item.description || '');
     return match ? match[1] : null;
+  }
+
+  function parseFeedXml(xmlText, source) {
+    const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+    if (doc.querySelector('parsererror')) return [];
+    return Array.from(doc.querySelectorAll('item')).map(itemEl => {
+      const text = (tag) => {
+        const el = itemEl.querySelector(tag);
+        return el ? el.textContent.trim() : '';
+      };
+      const encodedEl = itemEl.getElementsByTagNameNS('*', 'encoded')[0];
+      const enclosureEl = itemEl.querySelector('enclosure');
+      return {
+        title: text('title'),
+        link: text('link') || text('guid'),
+        pubDate: text('pubDate'),
+        description: text('description'),
+        content: encodedEl ? encodedEl.textContent : '',
+        enclosureUrl: enclosureEl ? enclosureEl.getAttribute('url') : '',
+        source,
+      };
+    });
   }
 
   function renderPosts(items) {
@@ -183,12 +205,13 @@
   }
 
   function fetchFeed(feed) {
-    const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url);
+    const proxyUrl = CORS_PROXY + encodeURIComponent(feed.url);
     return fetch(proxyUrl)
-      .then(res => { if (!res.ok) throw new Error('Network error'); return res.json(); })
-      .then(data => {
-        if (data.status !== 'ok' || !data.items) throw new Error('Empty feed');
-        return data.items.map(item => Object.assign({}, item, { source: feed.source }));
+      .then(res => { if (!res.ok) throw new Error('Network error'); return res.text(); })
+      .then(xml => {
+        const items = parseFeedXml(xml, feed.source);
+        if (!items.length) throw new Error('Empty feed');
+        return items;
       })
       .catch(err => { console.error(feed.source + ' feed failed:', err); return []; });
   }
