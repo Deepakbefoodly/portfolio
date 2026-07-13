@@ -109,10 +109,18 @@
 
   // ── Fetch posts from Substack + Medium ──
   // GitHub Pages is static and neither platform sends CORS headers for
-  // cross-origin fetches, so we go through a public CORS proxy and parse
-  // the raw RSS/XML ourselves (an earlier version used an RSS→JSON proxy,
-  // but its response cache lagged behind newly published posts by hours).
-  const CORS_PROXY = 'https://corsproxy.io/?url=';
+  // cross-origin fetches, so we go through a public CORS proxy. Free proxies
+  // are individually unreliable (some block production domains outright,
+  // some rate-limit, some just go down), so we try a few raw-XML proxies in
+  // order and only fall back to the RSS→JSON proxy (rss2json — slower to
+  // reflect new posts due to server-side caching, but has never outright
+  // failed in testing) if every XML proxy fails. This means the page only
+  // shows an error if literally everything is down at once.
+  const XML_PROXIES = [
+    (url) => 'https://api.cors.lol/?url=' + encodeURIComponent(url),
+    (url) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  ];
+  const JSON_PROXY = (url) => 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(url);
   const FEEDS = [
     { source: 'Substack', url: 'https://manshu8504.substack.com/feed', profileUrl: 'https://manshu8504.substack.com' },
     { source: 'Medium', url: 'https://medium.com/feed/@befoodly', profileUrl: 'https://medium.com/@befoodly' },
@@ -204,16 +212,49 @@
     `;
   }
 
+  function fetchWithTimeout(url, ms) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+  }
+
+  function fetchViaJsonProxy(feed) {
+    return fetchWithTimeout(JSON_PROXY(feed.url), 8000)
+      .then(res => { if (!res.ok) throw new Error('Network error'); return res.json(); })
+      .then(data => {
+        if (data.status !== 'ok' || !data.items || !data.items.length) throw new Error('Empty feed');
+        return data.items.map(item => ({
+          title: item.title,
+          link: item.link,
+          pubDate: item.pubDate,
+          description: item.description,
+          content: item.content,
+          enclosureUrl: (item.enclosure && item.enclosure.link) || item.thumbnail || '',
+          source: feed.source,
+        }));
+      });
+  }
+
   function fetchFeed(feed) {
-    const proxyUrl = CORS_PROXY + encodeURIComponent(feed.url);
-    return fetch(proxyUrl)
-      .then(res => { if (!res.ok) throw new Error('Network error'); return res.text(); })
-      .then(xml => {
-        const items = parseFeedXml(xml, feed.source);
-        if (!items.length) throw new Error('Empty feed');
-        return items;
-      })
-      .catch(err => { console.error(feed.source + ' feed failed:', err); return []; });
+    // Try each raw-XML proxy in turn first (freshest data, no server cache).
+    let chain = Promise.reject();
+    XML_PROXIES.forEach((buildUrl) => {
+      chain = chain.catch(() =>
+        fetchWithTimeout(buildUrl(feed.url), 7000)
+          .then(res => { if (!res.ok) throw new Error('Network error'); return res.text(); })
+          .then(xml => {
+            const items = parseFeedXml(xml, feed.source);
+            if (!items.length) throw new Error('Empty feed');
+            return items;
+          })
+      );
+    });
+    // Last resort: the JSON proxy, which may lag behind the live feed but
+    // has been reliable in testing — better a slightly stale post list than
+    // a hard error.
+    return chain
+      .catch(() => fetchViaJsonProxy(feed))
+      .catch(err => { console.error(feed.source + ' feed failed on every proxy:', err); return []; });
   }
 
   Promise.all(FEEDS.map(fetchFeed)).then(results => {
