@@ -735,6 +735,28 @@ h2 {
 .project-tech .cat-python { background: #3b6ea5; }
 .project-tech .cat-react  { background: #2a7f8a; }
 
+/* ── Projects Page ── */
+.project-page-hero {
+  padding-top: 8rem;
+}
+
+.project-page-hero-desc {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--muted);
+  max-width: 56ch;
+  margin-bottom: 0;
+}
+
+.project-page-grid-section {
+  padding-top: 0;
+}
+
+.project-github-cta {
+  text-align: center;
+  margin-top: 3rem;
+}
+
 /* ── Blog Page ── */
 .blog-hero {
   padding-top: 8rem;
@@ -1089,6 +1111,9 @@ footer a:hover { color: var(--accent); }
   /* Blog */
   .blog-hero { padding-top: 7rem; }
 
+  /* Projects page */
+  .project-page-hero { padding-top: 7rem; }
+
   /* Section spacing */
   section { padding: 5rem 2rem; }
 
@@ -1222,6 +1247,9 @@ footer a:hover { color: var(--accent); }
 
   .project-card { padding: 1.75rem; }
 
+  /* ── Projects page ── */
+  .project-page-hero { padding-top: 6.5rem; }
+
   /* ── Blog ── */
   .blog-hero { padding-top: 6.5rem; }
   .blog-grid { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -1304,6 +1332,9 @@ footer a:hover { color: var(--accent); }
   .project-title { font-size: 1.1rem; }
   .project-desc { font-size: 0.82rem; }
   .project-tech span { font-size: 0.58rem; }
+
+  /* ── Projects page ── */
+  .project-page-hero { padding-top: 6rem; }
 
   /* ── Blog ── */
   .blog-hero { padding-top: 6rem; }
