@@ -724,6 +724,17 @@ h2 {
   text-transform: uppercase;
 }
 
+/* Category tag — first chip in .project-tech, colored per category */
+.project-tech .project-category {
+  color: var(--paper);
+  font-weight: 500;
+}
+
+.project-tech .cat-java   { background: var(--accent); }
+.project-tech .cat-ai     { background: var(--accent2); }
+.project-tech .cat-python { background: #3b6ea5; }
+.project-tech .cat-react  { background: #2a7f8a; }
+
 /* ── Blog Page ── */
 .blog-hero {
   padding-top: 8rem;
