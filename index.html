@@ -8,8 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="image" href="assets/avatar.jpg">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300&family=Outfit:wght@300;500&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0a0614">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&family=DM+Mono:wght@400&family=Outfit:wght@400..600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="fx.js" defer></script>
 </head>
 <body>
 
@@ -37,6 +39,9 @@
   <div class="hero-left">
     <div class="hero-tag">Available for opportunities</div>
     <h1>Senior Software &amp; <em>AI Engineer</em></h1>
+    <div class="hero-roles" aria-hidden="true">
+      <span class="prompt">&gt;</span>building <span id="role-rotator">scalable backends</span><span class="caret"></span>
+    </div>
     <p class="hero-desc">
       A <strong>IIT Roorkee, 2021</strong> graduate, building scalable backend systems, elegant frontend experiences, and intelligent AI-powered products — with 5 years of engineering craft at the intersection of code and intelligence.
     </p>
@@ -49,7 +54,7 @@
     <div class="hero-card">
       <div class="hero-avatar">
         <img src="assets/avatar.jpg" alt="Deepak Jangid" id="avatar-img"
-             width="480" height="720" fetchpriority="high" decoding="async"
+             width="480" height="480" fetchpriority="high" decoding="async"
              onerror="this.style.display='none';document.getElementById('avatar-fallback').style.display='flex';">
         <span id="avatar-fallback" style="display:none;">DJ</span>
       </div>
@@ -84,7 +89,7 @@
   <div class="about-grid">
     <div>
       <div class="section-label reveal">About me</div>
-      <h2 class="reveal">Code meets<br><em style="font-style:italic;color:var(--accent)">intelligence</em></h2>
+      <h2 class="reveal">Code meets<br><em>intelligence</em></h2>
       <div class="about-text reveal">
         <p>
           I'm a <strong>Senior Software Engineer</strong> with 5 years of hands-on experience building production-grade systems — from high-throughput Java backend services to dynamic React frontends and now AI-powered applications.
@@ -148,7 +153,7 @@
   <div class="section-label reveal">Technical Expertise</div>
   <h2 class="reveal">My craft,<br>my tools</h2>
   <div class="skills-grid">
-    <div class="skill-category reveal">
+    <div class="skill-category reveal" data-domain="backend">
       <div class="skill-accent">☕</div>
       <div class="skill-cat-label">Domain 01</div>
       <div class="skill-cat-title">Backend Engineering</div>
@@ -165,7 +170,7 @@
         <li>AWS &amp; GCP Services</li>
       </ul>
     </div>
-    <div class="skill-category reveal">
+    <div class="skill-category reveal" data-domain="ai">
       <div class="skill-accent">🤖</div>
       <div class="skill-cat-label">Domain 02</div>
       <div class="skill-cat-title">AI Engineering</div>
@@ -181,10 +186,10 @@
         <li>Observation &amp; Monitoring</li>
       </ul>
     </div>
-    <div class="skill-category reveal">
+    <div class="skill-category reveal" data-domain="frontend">
       <div class="skill-accent">⚛</div>
       <div class="skill-cat-label">Domain 03</div>
-      <div class="skill-cat-title">React Frontend</div>
+      <div class="skill-cat-title">Frontend Engineering</div>
       <ul class="skill-list">
         <li>React 18 &amp; Next.js</li>
         <li>TypeScript</li>
@@ -302,24 +307,24 @@
       </div>
     </div>
     <div class="reveal">
-      <div style="border: 1px solid rgba(245,242,235,0.12); padding: 2.5rem;">
-        <div style="font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(245,242,235,0.4); margin-bottom: 1.5rem;">Quick info</div>
-        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+      <div class="contact-info-panel">
+        <div class="contact-info-header">Quick info</div>
+        <div class="contact-info-list">
           <div>
-            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem;">Location</div>
-            <div style="font-size: 0.9rem; color: rgba(245,242,235,0.75);">Bengaluru, India · Open to Remote</div>
+            <div class="contact-info-item-label">Location</div>
+            <div class="contact-info-item-value">Bengaluru, India · Open to Remote</div>
           </div>
           <div>
-            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem;">Experience</div>
-            <div style="font-size: 0.9rem; color: rgba(245,242,235,0.75);">5+ Years · Full Stack Development</div>
+            <div class="contact-info-item-label">Experience</div>
+            <div class="contact-info-item-value">5+ Years · Full Stack Development</div>
           </div>
           <div>
-            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem;">Interests</div>
-            <div style="font-size: 0.9rem; color: rgba(245,242,235,0.75);">Java · Python · AI Engineering</div>
+            <div class="contact-info-item-label">Interests</div>
+            <div class="contact-info-item-value">Java · Python · AI Engineering</div>
           </div>
           <div>
-            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem;">Response time</div>
-            <div style="font-size: 0.9rem; color: rgba(245,242,235,0.75);">Usually within 24 hours</div>
+            <div class="contact-info-item-label">Response time</div>
+            <div class="contact-info-item-value">Usually within 24 hours</div>
           </div>
         </div>
       </div>
@@ -367,18 +372,6 @@
     });
   }, { threshold: 0.1 });
   reveals.forEach(r => observer.observe(r));
-
-  // Nav scroll effect
-  const navEl = document.querySelector('nav');
-  let navTicking = false;
-  window.addEventListener('scroll', () => {
-    if (navTicking) return;
-    navTicking = true;
-    requestAnimationFrame(() => {
-      navEl.style.boxShadow = window.scrollY > 20 ? '0 2px 20px rgba(13,13,13,0.08)' : 'none';
-      navTicking = false;
-    });
-  }, { passive: true });
 </script>
 </body>
 </html>

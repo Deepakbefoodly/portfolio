@@ -7,8 +7,10 @@
   <title>Projects — Deepak Jangid</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300&family=Outfit:wght@300;500&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0a0614">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&family=DM+Mono:wght@400&family=Outfit:wght@400..600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="fx.js" defer></script>
 </head>
 <body>
 
@@ -43,7 +45,7 @@
 <!-- PROJECTS -->
 <section class="project-page-grid-section">
   <div class="projects-grid">
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-domain="ai">
       <a class="project-arrow" href="https://ai-chatbot-fe-wine.vercel.app/" target="_blank" rel="noopener" aria-label="View project">👁</a>
       <div class="project-number">01</div>
       <div class="project-title">AI Web Scraping | Q&A Intelligence</div>
@@ -53,7 +55,7 @@
         <span class="project-category cat-ai">AI</span><span>Python</span><span>RAG</span><span>FastAPI</span><span>LLMs</span><span>VectorDB</span><span>React</span>
       </div>
     </div>
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-domain="backend">
       <a class="project-arrow" href="https://befoodly-website.vercel.app/" target="_blank" rel="noopener" aria-label="View project">👁</a>
       <div class="project-number">02</div>
       <div class="project-title">Food Ordering App</div>
@@ -63,19 +65,17 @@
         <span class="project-category cat-java">Java</span><span>Springboot</span><span>AWS</span><span>PostgreSQL</span><span>React</span><span>HTML/CSS</span><span>Redux</span>
       </div>
     </div>
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-domain="ai">
       <a class="project-arrow" href="https://github.com/Deepakbefoodly/AI-Voice-Agent" target="_blank" rel="noopener" aria-label="View project">👁</a>
       <div class="project-number">03</div>
       <div class="project-title">Real-time Voice Agents</div>
-      <div class="project-desc">AI-powered systems that enable natural, human-like conversations through spoken language by combining speech recognition,
-        large language models, and speech synthesis in a low-latency streaming pipeline. They can listen, understand, and respond almost instantly, allowing users to interact hands-free
-        while accessing knowledge bases, calling APIs, and performing tasks like booking services or retrieving personalized data. By integrating technologies such as Whisper for speech-to-text and advanced text-to-speech engines like ElevenLabs,
-        these agents create seamless, conversational experiences across applications like customer support, virtual assistants, and voice-enabled automation systems.</div>
+      <div class="project-desc">AI voice agents that hold natural, human-like conversations in real time — listening with Whisper speech-to-text,
+        reasoning with LLMs over a knowledge base and APIs, and replying through low-latency text-to-speech like ElevenLabs.</div>
       <div class="project-tech">
         <span class="project-category cat-python">Python</span><span>Twilio</span><span>TTS/STT</span><span>VectorDB</span>
       </div>
     </div>
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-domain="frontend">
       <a class="project-arrow" href="https://github.com/Deepakbefoodly/DiagramEditor" target="_blank" rel="noopener" aria-label="View GitHub repo">👁</a>
       <div class="project-number">04</div>
       <div class="project-title">Real-Time Diagram Editor</div>
@@ -85,7 +85,7 @@
         <span class="project-category cat-react">React</span><span>TypeScript</span><span>Zustand</span><span>Vite</span><span>Python</span>
       </div>
     </div>
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-domain="ai">
       <a class="project-arrow" href="https://github.com/Deepakbefoodly/Critic-Agent" target="_blank" rel="noopener" aria-label="View GitHub repo">👁</a>
       <div class="project-number">05</div>
       <div class="project-title">AI Critic & Proof-of-Work Evaluator</div>
@@ -95,7 +95,7 @@
         <span class="project-category cat-ai">AI</span><span>Python</span><span>FastAPI</span><span>LangChain</span><span>Gemini</span>
       </div>
     </div>
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-domain="backend">
       <a class="project-arrow" href="https://github.com/Deepakbefoodly/rental-service" target="_blank" rel="noopener" aria-label="View GitHub repo">👁</a>
       <div class="project-number">06</div>
       <div class="project-title">Rental Service — Low-Level Design</div>
@@ -139,18 +139,6 @@
       el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.opacity = '0.6'; });
     });
   }
-
-  // Nav scroll effect
-  const navEl = document.querySelector('nav');
-  let navTicking = false;
-  window.addEventListener('scroll', () => {
-    if (navTicking) return;
-    navTicking = true;
-    requestAnimationFrame(() => {
-      navEl.style.boxShadow = window.scrollY > 20 ? '0 2px 20px rgba(13,13,13,0.08)' : 'none';
-      navTicking = false;
-    });
-  }, { passive: true });
 
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
