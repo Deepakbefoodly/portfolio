@@ -7,8 +7,10 @@
   <title>My Blogs — Deepak Jangid</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300&family=Outfit:wght@300;500&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0a0614">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&family=DM+Mono:wght@400&family=Outfit:wght@400..600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="fx.js" defer></script>
 </head>
 <body>
 
@@ -79,18 +81,6 @@
       el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.opacity = '0.6'; });
     });
   }
-
-  // Nav scroll effect
-  const navEl = document.querySelector('nav');
-  let navTicking = false;
-  window.addEventListener('scroll', () => {
-    if (navTicking) return;
-    navTicking = true;
-    requestAnimationFrame(() => {
-      navEl.style.boxShadow = window.scrollY > 20 ? '0 2px 20px rgba(13,13,13,0.08)' : 'none';
-      navTicking = false;
-    });
-  }, { passive: true });
 
   // Scroll reveal
   function observeReveals() {
